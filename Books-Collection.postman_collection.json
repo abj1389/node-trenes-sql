@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "8a9e13fb-192e-4192-a60e-928dc5edd477",
+		"name": "Books-Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27147948"
+	},
+	"item": [
+		{
+			"name": "Get Books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/book?page=1&limit=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"book"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get book by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/book/644ad92c312fdbae4b8b93d9",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"book",
+						"644ad92c312fdbae4b8b93d9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search book by title",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/book/title/The tight mammoth",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"book",
+						"title",
+						"The tight mammoth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create book",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"The amazing Spiderman\",\n    \"author\": \"Stan Lee\",\n    \"pages\": \"169\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/book",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"book"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update book",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"author\": \"Stanislao Leeloo\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/book/644adc46e8728986cdd8509a",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"book",
+						"644adc46e8728986cdd8509a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete book",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/book/644adc46e8728986cdd8509a",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"book",
+						"644adc46e8728986cdd8509a"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

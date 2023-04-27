@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// Creamos el schema del usuario
+// Creamos el schema del libro
 const bookSchema = new Schema(
   {
     title: {

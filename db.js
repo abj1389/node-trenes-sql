@@ -9,7 +9,6 @@ const config = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
-  // dbName: "node-s3",
 };
 
 const connect = async () => {
