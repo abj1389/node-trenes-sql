@@ -62,11 +62,7 @@ router.get("/title/:title", async (req, res) => {
 // CRUD: CREATE
 router.post("/", async (req, res) => {
   try {
-    const book = new Book({
-      title: req.body.title,
-      author: req.body.author,
-      pages: req.body.pages,
-    });
+    const book = new Book(req.body);
 
     const createdBook = await book.save();
     return res.status(201).json(createdBook);
