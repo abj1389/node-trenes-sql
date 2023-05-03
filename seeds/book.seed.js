@@ -11,22 +11,29 @@ for (let i = 0; i < 50; i++) {
     title: "The " + faker.word.adjective() + " " + faker.word.noun(),
     author: faker.name.fullName(),
     pages: faker.datatype.number({ max: 3031 }),
+    publisher: {
+      name: faker.company.name(),
+      country: faker.address.country(),
+    },
   };
   bookList.push(newBook);
 }
 
-connect().then(() => {
-  console.log("Tenemos conexión");
-
-  // Borrar datos
-  Book.collection.drop().then(() => {
+const bookSeed = async () => {
+  try {
+    // Conectar a BBDD
+    await connect();
+    console.log("Tenemos conexión");
+    // Borrar datos
+    await Book.collection.drop();
     console.log("Usuarios eliminados");
-
-    // Añadimos libros
+    // Añadir libros
     const documents = bookList.map((book) => new Book(book));
-    Book.insertMany(documents)
-      .then(() => console.log("Datos guardados correctamente!"))
-      .catch((error) => console.error(error))
-      .finally(() => mongoose.disconnect());
-  });
-});
+    await Book.insertMany(documents);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    mongoose.disconnect();
+  }
+};
+bookSeed();
