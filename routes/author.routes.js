@@ -1,7 +1,7 @@
 const express = require("express");
 
 // Modelos
-const { Book } = require("../models/Book.js");
+const { Author } = require("../models/Author.js");
 
 // Router propio de libros
 const router = express.Router();
@@ -11,18 +11,17 @@ router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
-    const books = await Book.find()
+    const authors = await Author.find()
       .limit(limit)
-      .skip((page - 1) * limit)
-      .populate("author");
+      .skip((page - 1) * limit);
 
     // Número total de elementos
-    const totalElements = await Book.countDocuments();
+    const totalElements = await Author.countDocuments();
     const response = {
       totalItems: totalElements,
       totalPages: Math.ceil(totalElements / limit),
       currentPage: page,
-      data: books,
+      data: authors,
     };
     res.json(response);
   } catch (error) {
@@ -34,9 +33,17 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const book = await Book.findById(id).populate("author");
-    if (book) {
-      res.json(book);
+    const author = await Author.findById(id);
+
+    if (author) {
+      const temporalAuthor = author.toObject();
+      const includeBooks = req.query.includeBooks === "true";
+      if (includeBooks) {
+        const books = await Book.find({ author: id });
+        temporalAuthor.books = books;
+      }
+
+      res.json(temporalAuthor);
     } else {
       res.status(404).json({});
     }
@@ -45,13 +52,13 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/title/:title", async (req, res) => {
-  const title = req.params.title;
+router.get("/name/:name", async (req, res) => {
+  const name = req.params.name;
 
   try {
-    const book = await Book.find({ title: new RegExp("^" + title.toLowerCase(), "i") }).populate("author");
-    if (book?.length) {
-      res.json(book);
+    const author = await Author.find({ name: new RegExp("^" + name.toLowerCase(), "i") });
+    if (author?.length) {
+      res.json(author);
     } else {
       res.status(404).json([]);
     }
@@ -63,10 +70,10 @@ router.get("/title/:title", async (req, res) => {
 // CRUD: CREATE
 router.post("/", async (req, res) => {
   try {
-    const book = new Book(req.body);
+    const author = new Author(req.body);
 
-    const createdBook = await book.save();
-    return res.status(201).json(createdBook);
+    const createdAuthor = await author.save();
+    return res.status(201).json(createdAuthor);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -76,9 +83,9 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const bookDeleted = await Book.findByIdAndDelete(id);
-    if (bookDeleted) {
-      res.json(bookDeleted);
+    const authorDeleted = await Author.findByIdAndDelete(id);
+    if (authorDeleted) {
+      res.json(authorDeleted);
     } else {
       res.status(404).json({});
     }
@@ -91,9 +98,9 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const bookUpdated = await Book.findByIdAndUpdate(id, req.body, { new: true });
-    if (bookUpdated) {
-      res.json(bookUpdated);
+    const authorUpdated = await Author.findByIdAndUpdate(id, req.body, { new: true });
+    if (authorUpdated) {
+      res.json(authorUpdated);
     } else {
       res.status(404).json({});
     }
@@ -102,4 +109,4 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-module.exports = { bookRouter: router };
+module.exports = { authorRouter: router };

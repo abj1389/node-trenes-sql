@@ -7,8 +7,12 @@
     "lint": "eslint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
-    "start": "node --watch index.js",
-    "seed:books": "node ./seeds/book.seed.js"
+    "start": "node index.js",
+    "start:watch": "node --watch index.js",
+    "seed:books": "node ./seeds/book.seed.js",
+    "seed:authors": "node ./seeds/author.seed.js",
+    "seed:relations": "node ./seeds/relations.seed.js",
+    "seed:all": "npm run seed:books && npm run seed:authors && npm run seed:relations"
   },
   "keywords": [],
   "author": "Alejandro Brasoveanu",

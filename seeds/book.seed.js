@@ -9,7 +9,6 @@ const bookList = [];
 for (let i = 0; i < 50; i++) {
   const newBook = {
     title: "The " + faker.word.adjective() + " " + faker.word.noun(),
-    author: faker.name.fullName(),
     pages: faker.datatype.number({ max: 3031 }),
     publisher: {
       name: faker.company.name(),
@@ -26,7 +25,7 @@ const bookSeed = async () => {
     console.log("Tenemos conexión");
     // Borrar datos
     await Book.collection.drop();
-    console.log("Usuarios eliminados");
+    console.log("Libros eliminados");
     // Añadir libros
     const documents = bookList.map((book) => new Book(book));
     await Book.insertMany(documents);
