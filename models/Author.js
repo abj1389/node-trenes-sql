@@ -11,7 +11,7 @@ const authorSchema = new Schema(
       required: true,
       trim: true,
       minLength: [3, "El nombre debe tener 3 caracteres como minimo..."],
-      maxLength: [20, "El nombre no puede tener mas de 20 caracteres..."],
+      maxLength: [80, "El nombre no puede tener mas de 20 caracteres..."],
     },
     country: {
       type: String,

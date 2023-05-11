@@ -6,9 +6,9 @@ function App() {
   const [books, setBooks] = React.useState();
 
   React.useEffect(() => {
-    fetch(apiUrl).then((books) => {
-      setBooks(books);
-    });
+    fetch(apiUrl)
+      .then((books) => books.json())
+      .then((booksParsed) => setBooks(booksParsed));
   }, []);
 
   return (
@@ -16,7 +16,7 @@ function App() {
       <h2>Libros</h2>
       <ul>
         {books?.data?.map((book) => (
-          <li>{book.title + "(" + book.author.name + ")"}</li>
+          <li key={book._id}>{book.title}</li>
         ))}
       </ul>
     </div>
