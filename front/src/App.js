@@ -15,7 +15,7 @@ function App() {
     <div className="App">
       <h2>Libros</h2>
       <ul>
-        {books?.map((book) => (
+        {books?.data?.map((book) => (
           <li>{book.title + "(" + book.author.name + ")"}</li>
         ))}
       </ul>
