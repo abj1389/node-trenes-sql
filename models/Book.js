@@ -13,7 +13,7 @@ const bookSchema = new Schema(
       required: true,
       trim: true,
       minLength: [3, "El titulo no puede tener menos de 3 caracteres..."],
-      maxLength: [80, "El titulo no puede tener mas de 20 caracteres..."],
+      maxLength: [30, "El titulo no puede tener mas de 30 caracteres..."],
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +32,7 @@ const bookSchema = new Schema(
           required: true,
           trim: true,
           minLength: [3, "El nombre de la editorial no puede tener menos de 3 caracteres..."],
-          maxLength: [80, "El nombre de la editorial no puede tener mas de 20 caracteres..."],
+          maxLength: [40, "El nombre de la editorial no puede tener mas de 40 caracteres..."],
         },
         country: {
           type: String,

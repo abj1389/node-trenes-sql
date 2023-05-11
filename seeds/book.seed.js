@@ -9,7 +9,7 @@ const bookList = [];
 for (let i = 0; i < 50; i++) {
   const newBook = {
     title: "The " + faker.word.adjective() + " " + faker.word.noun(),
-    pages: faker.datatype.number({ max: 3031 }),
+    pages: faker.datatype.number({ max: 3031, min: 1 }),
     publisher: {
       name: faker.company.name(),
       country: faker.address.country(),

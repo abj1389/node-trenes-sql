@@ -12,7 +12,9 @@
     "seed:books": "node ./seeds/book.seed.js",
     "seed:authors": "node ./seeds/author.seed.js",
     "seed:relations": "node ./seeds/relations.seed.js",
-    "seed:all": "npm run seed:books && npm run seed:authors && npm run seed:relations"
+    "seed:all": "npm run seed:books && npm run seed:authors && npm run seed:relations",
+    "normalization:book": "node ./normalizations/book.normalization.js",
+    "normalization:author": "node ./normalizations/author.normalization.js"
   },
   "keywords": [],
   "author": "Alejandro Brasoveanu",
