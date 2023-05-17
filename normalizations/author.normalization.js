@@ -19,13 +19,13 @@ const authorNormalization = async () => {
           await author.save();
           console.log(`Modificado autor ${author.name}`);
         } else {
-          //He decidido borrar los autores cuyo nombre no cumple la validación
-          //y la otra opción sería actualizar los autores con un nombre valido.
+          // He decidido borrar los autores cuyo nombre no cumple la validación
+          // y la otra opción sería actualizar los autores con un nombre valido.
           invalidAuthors.push(author);
           await author.deleteOne();
         }
       } else {
-        //Borro el autor ya que no tiene un pais válido
+        // Borro el autor ya que no tiene un pais válido
         invalidAuthors.push(author);
         await author.deleteOne();
       }

@@ -20,6 +20,10 @@ const authorSchema = new Schema(
       enum: allowedCountries,
       uppercase: true,
     },
+    profileImage: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

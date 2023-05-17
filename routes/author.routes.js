@@ -1,5 +1,8 @@
 const express = require("express");
 const { Book } = require("../models/Book");
+const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "public" });
 
 // Modelos
 const { Author } = require("../models/Author.js");
@@ -7,11 +10,32 @@ const { Author } = require("../models/Author.js");
 // Router propio de libros
 const router = express.Router();
 
-// CRUD: READ
-router.get("/", async (req, res) => {
+// Middleware de paginación
+router.get("/", (req, res, next) => {
   try {
+    console.log("Estamos en el middleware /car que comprueba parámetros");
+
     const page = req.query.page ? parseInt(req.query.page) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+
+    if (!isNaN(page) && !isNaN(limit) && page > 0 && limit > 0) {
+      req.query.page = page;
+      req.query.limit = limit;
+      next();
+    } else {
+      console.log("Parámetros no válidos:");
+      console.log(JSON.stringify(req.query));
+      res.status(400).json({ error: "Params page or limit are not valid" });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// CRUD: READ
+router.get("/", async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
     const authors = await Author.find()
       .limit(limit)
       .skip((page - 1) * limit);
@@ -26,12 +50,12 @@ router.get("/", async (req, res) => {
     };
     res.json(response);
   } catch (error) {
-    res.status(500).json(error);
+    next(error);
   }
 });
 
 // CRUD: READ
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const author = await Author.findById(id);
@@ -49,12 +73,11 @@ router.get("/:id", async (req, res) => {
       res.status(404).json({});
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
+    next(error);
   }
 });
 
-router.get("/name/:name", async (req, res) => {
+router.get("/name/:name", async (req, res, next) => {
   const name = req.params.name;
 
   try {
@@ -65,29 +88,24 @@ router.get("/name/:name", async (req, res) => {
       res.status(404).json([]);
     }
   } catch (error) {
-    res.status(500).json(error);
+    next(error);
   }
 });
 
 // CRUD: CREATE
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   try {
     const author = new Author(req.body);
 
     const createdAuthor = await author.save();
     return res.status(201).json(createdAuthor);
   } catch (error) {
-    console.error(error);
-    if (error?.name === "ValidationError") {
-      res.status(400).json(error);
-    } else {
-      res.status(500).json(error);
-    }
+    next(error);
   }
 });
 
 // CRUD: DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const authorDeleted = await Author.findByIdAndDelete(id);
@@ -97,13 +115,12 @@ router.delete("/:id", async (req, res) => {
       res.status(404).json({});
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
+    next(error);
   }
 });
 
 // CRUD: UPDATE
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const authorUpdated = await Author.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
@@ -113,12 +130,33 @@ router.put("/:id", async (req, res) => {
       res.status(404).json({});
     }
   } catch (error) {
-    console.error(error);
-    if (error?.name === "ValidationError") {
-      res.status(400).json(error);
+    next(error);
+  }
+});
+router.post("/logo-upload", upload.single("logo"), async (req, res, next) => {
+  try {
+    // Renombrado de la imagen
+    const originalName = req.file.originalname;
+    const path = req.file.path;
+    const newPath = path + "_" + originalName;
+    fs.renameSync(path, newPath);
+
+    // Busqueda de la marca
+    const authorId = req.body.authorId;
+    const author = await Author.findById(authorId);
+
+    if (author) {
+      author.profileImage = newPath;
+      await author.save();
+      res.json(author);
+
+      console.log("Autor modificado correctamente!");
     } else {
-      res.status(500).json(error);
+      fs.unlinkSync(newPath);
+      res.status(404).send("Autor no encontrado");
     }
+  } catch (error) {
+    next(error);
   }
 });
 

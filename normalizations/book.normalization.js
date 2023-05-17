@@ -14,12 +14,12 @@ const bookNormalization = async () => {
     for (const book of books) {
       book.title = book.title.trim();
       book.pages = book.pages < 1 ? 1 : book.pages > 10000 ? 10000 : book.pages;
-      if (book.title.length >= 3 && book.title.length <= 30) {
+      if (book.title.length >= 3 && book.title.length <= 40) {
         await book.save();
         console.log(`Modificado libro ${book.title}`);
       } else {
-        //He decidido borrar los libros cuyo titulo no cumple la validación
-        //y la otra opción sería actualizar los libros con un título valido.
+        // He decidido borrar los libros cuyo titulo no cumple la validación
+        // y la otra opción sería actualizar los libros con un título valido.
         invalidBooks.push(book);
         await book.deleteOne();
       }
@@ -27,8 +27,8 @@ const bookNormalization = async () => {
         await book.save();
         console.log(`Modificada editorial ${book.publisher.name}.`);
       } else {
-        //He decidido eliminar las editoriales cuyo nombre no cumple la validación
-        //y la otra opción sería actualizar las editoriales con un nombre valido.
+        // He decidido eliminar las editoriales cuyo nombre no cumple la validación
+        // y la otra opción sería actualizar las editoriales con un nombre valido.
         book.publisher = {};
         invalidPublishers.push(book.publisher);
       }

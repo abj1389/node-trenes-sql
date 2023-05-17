@@ -1,6 +1,7 @@
 const express = require("express");
 const { bookRouter } = require("./routes/book.routes.js");
 const { authorRouter } = require("./routes/author.routes.js");
+const { fileUploadRouter } = require("./routes/file-upload.routes.js");
 const cors = require("cors");
 
 const main = async () => {
@@ -8,13 +9,19 @@ const main = async () => {
   const { connect } = require("./db.js");
   await connect();
 
-  // Configuración del server
+  // Configuración del app
   const PORT = 3000;
-  const server = express();
-  server.use(express.json());
-  server.use(express.urlencoded({ extended: false }));
-  server.use(cors({ origin: "http://localhost:3000" }));
+  const app = express();
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(cors({ origin: "http://localhost:3000" }));
 
+  //  Middlewares de aplicación
+  app.use((req, res, next) => {
+    const date = new Date();
+    console.log(`Petición de tipo ${req.method} a la url ${req.originalUrl} el ${date}`);
+    next();
+  });
   // Rutas
   const router = express.Router();
   router.get("/", (req, res) => {
@@ -25,12 +32,28 @@ const main = async () => {
   });
 
   // Usamos las rutas
-  server.use("/book", bookRouter);
-  server.use("/author", authorRouter);
-  server.use("/", router);
+  app.use("/book", bookRouter);
+  app.use("/author", authorRouter);
+  app.use("/public", express.static("public"));
+  app.use("/file-upload", fileUploadRouter);
+  app.use("/", router);
 
-  server.listen(PORT, () => {
-    console.log(`Server levantado en el puerto ${PORT}`);
+  // Middleware de gestión de errores
+  app.use((err, req, res, next) => {
+    console.log("*** INICIO DE ERROR ***");
+    console.log(`PETICIÓN FALLIDA: ${req.method} a la url ${req.originalUrl}`);
+    console.log(err);
+    console.log("*** FIN DE ERROR ***");
+
+    if (err?.name === "ValidationError") {
+      res.status(400).json(err);
+    } else {
+      res.status(500).json(err);
+    }
+  });
+
+  app.listen(PORT, () => {
+    console.log(`app levantado en el puerto ${PORT}`);
   });
 };
 main();

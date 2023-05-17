@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-//No uso array para validar countries ya que este dato lo genero con faker
-//y me imagino que tendra una lista con todos los paises...
-//const allowedCountries = [];
+// No uso array para validar countries ya que este dato lo genero con faker
+// y me imagino que tendra una lista con todos los paises...
+// const allowedCountries = [];
 
 // Creamos el schema del libro
 const bookSchema = new Schema(
@@ -13,7 +13,7 @@ const bookSchema = new Schema(
       required: true,
       trim: true,
       minLength: [3, "El titulo no puede tener menos de 3 caracteres..."],
-      maxLength: [30, "El titulo no puede tener mas de 30 caracteres..."],
+      maxLength: [40, "El titulo no puede tener mas de 40 caracteres..."],
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
