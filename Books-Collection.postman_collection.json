@@ -80,7 +80,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"The amazing Pacman\",\n    \"name\": \"Fede\",\n    \"author\": \"Stadwdwdn Lee\",\n    \"pages\": \"0.1\",\n    \"publisher\": {\n        \"name\": \"mamwdwdam\",\n        \"country\": \"EEUU\"\n    }\n}",
+							"raw": "{\n    \"title\": \"The amazing Pacman\",\n    \"name\": \"Fede\",\n    \"pages\": \"1\",\n    \"publisher\": {\n        \"name\": \"mamwdwdam\",\n        \"country\": \"EEUU\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -106,7 +106,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"author\": \"Stanislao Leeloo\"\n}",
+							"raw": "{\n    \"title\": \"jajajajajajjajajjajajajajajajajajjajaj\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -114,13 +114,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/book/644adc46e8728986cdd8509a",
+							"raw": "{{base_url}}/book/645cb0f87b0b8e2348fa1c68",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"book",
-								"644adc46e8728986cdd8509a"
+								"645cb0f87b0b8e2348fa1c68"
 							]
 						}
 					},
@@ -141,13 +141,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/book/6452ba6067342a1368239c4a",
+							"raw": "{{base_url}}/book/645cb0f87b0b8e2348fa1c68",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"book",
-								"6452ba6067342a1368239c4a"
+								"645cb0f87b0b8e2348fa1c68"
 							]
 						}
 					},
@@ -191,13 +191,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/author/64542c855623813e0bd04f43",
+							"raw": "{{base_url}}/author/645436ab1f4d90eda42fae04?includeBooks=true",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"author",
-								"64542c855623813e0bd04f43"
+								"645436ab1f4d90eda42fae04"
+							],
+							"query": [
+								{
+									"key": "includeBooks",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -301,8 +307,112 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Logo upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "logo",
+									"type": "file",
+									"src": "/Users/alex/Máster Desarrollo Web Full Stack/Módulo 3/Sesión 3, 4, 5, 6 y 7/node-books-db/public/jane_austen.jpeg"
+								},
+								{
+									"key": "authorId",
+									"value": "645d614d06c6498aea1ed3fd",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/author/logo-upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"author",
+								"logo-upload"
+							]
+						}
+					},
+					"response": []
 				}
 			]
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "Get public files",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{base_url}}/public/libros.png",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"public",
+								"libros.png"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/alex/Pictures/Imágenes/wizarding-world-legacy-link-reward-wallpaper-0eaee25c51d148b5ada70c8944b7e199.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/file-upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file-upload"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get home",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}",
+					"host": [
+						"{{base_url}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -323,6 +433,19 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "base_url",
+			"value": "https://node-books-db-git-main-abj1389.vercel.app/",
+			"type": "string",
+			"disabled": true
 		}
 	]
 }
