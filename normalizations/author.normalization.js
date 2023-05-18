@@ -6,7 +6,7 @@ const authorNormalization = async () => {
   try {
     await connect();
     console.log("Conexíón realizada correctamente.");
-    const authors = await Author.find();
+    const authors = await Author.find().select("+password");
     console.log(`Hemos recuperado ${authors.length} autores de la base de datos`);
     const allowedCountries = ["COLOMBIA", "ENGLAND", "RUSSIA", "UNITED STATES", "ARGENTINA", "CZECHOSLOVAKIA", "JAPAN", "NIGERIA"];
     const invalidAuthors = [];

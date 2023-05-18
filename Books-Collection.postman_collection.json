@@ -323,7 +323,7 @@
 								},
 								{
 									"key": "authorId",
-									"value": "645d614d06c6498aea1ed3fd",
+									"value": "64652bb8f0767f11e947227c",
 									"type": "text"
 								}
 							]
@@ -359,13 +359,13 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{base_url}}/public/libros.png",
+							"raw": "{{base_url}}/public/65250e78d74feee61cd5fad19334702a_jane_austen.jpeg",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"public",
-								"libros.png"
+								"65250e78d74feee61cd5fad19334702a_jane_austen.jpeg"
 							]
 						}
 					},

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { connect } = require("../db.js");
 const { Book } = require("../models/Book.js");
 const { Author } = require("../models/Author.js");
-const { generateRandom } = require("../utils.js");
+const { generateRandom } = require("../utils/generate-random.js");
 
 const relationSeed = async () => {
   try {
