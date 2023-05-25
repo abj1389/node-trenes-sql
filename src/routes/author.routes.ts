@@ -1,29 +1,27 @@
-const express = require("express");
-const { Book } = require("../models/Book");
-const fs = require("fs");
-const bcrypt = require("bcrypt");
-const multer = require("multer");
+import { generateToken } from "../utils/token";
+import { isAuth } from "../middlewares/auth.middleware";
+import { Author } from "../models/Author";
+import { Book } from "../models/Book";
+import express, { type NextFunction, type Response, type Request } from "express";
+import fs from "fs";
+import bcrypt from "bcrypt";
+import multer from "multer";
 const upload = multer({ dest: "public" });
-const { generateToken } = require("../utils/token");
-const { isAuth } = require("../middlewares/auth.middleware.js");
-
-// Modelos
-const { Author } = require("../models/Author.js");
 
 // Router propio de libros
-const router = express.Router();
+export const authorRouter = express.Router();
 
 // Middleware de paginación
-router.get("/", (req, res, next) => {
+authorRouter.get("/", (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log("Estamos en el middleware /car que comprueba parámetros");
 
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const page: number = req.query.page ? parseInt(req.query.page as string) : 1;
+    const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
     if (!isNaN(page) && !isNaN(limit) && page > 0 && limit > 0) {
-      req.query.page = page;
-      req.query.limit = limit;
+      req.query.page = page as any;
+      req.query.limit = limit as any;
       next();
     } else {
       console.log("Parámetros no válidos:");
@@ -36,9 +34,9 @@ router.get("/", (req, res, next) => {
 });
 
 // CRUD: READ
-router.get("/", async (req, res, next) => {
+authorRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit }: any = req.query;
     const authors = await Author.find()
       .limit(limit)
       .skip((page - 1) * limit);
@@ -58,7 +56,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // CRUD: READ
-router.get("/:id", async (req, res, next) => {
+authorRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const author = await Author.findById(id).select("+password");
@@ -80,7 +78,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/name/:name", async (req, res, next) => {
+authorRouter.get("/name/:name", async (req: Request, res: Response, next: NextFunction) => {
   const name = req.params.name;
 
   try {
@@ -96,7 +94,7 @@ router.get("/name/:name", async (req, res, next) => {
 });
 
 // LOGIN DE AUTORES
-router.post("/login", async (req, res, next) => {
+authorRouter.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // const email = req.body.email;
     // const password = req.body.password;
@@ -117,11 +115,11 @@ router.post("/login", async (req, res, next) => {
     const match = await bcrypt.compare(password, author.password);
     if (match) {
       // Quitamos password de la respuesta
-      const authorWithoutPass = author.toObject();
+      const authorWithoutPass: any = author.toObject();
       delete authorWithoutPass.password;
 
       // Generamos token JWT
-      const jwtToken = generateToken(author._id, author.email);
+      const jwtToken = generateToken(author._id.toString(), author.email);
 
       return res.status(200).json({ token: jwtToken });
     } else {
@@ -133,7 +131,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 // CRUD: CREATE
-router.post("/", async (req, res, next) => {
+authorRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const author = new Author(req.body);
 
@@ -145,7 +143,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // CRUD: DELETE
-router.delete("/:id", isAuth, async (req, res, next) => {
+authorRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
@@ -165,7 +163,7 @@ router.delete("/:id", isAuth, async (req, res, next) => {
 });
 
 // CRUD: UPDATE
-router.put("/:id", isAuth, async (req, res, next) => {
+authorRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
@@ -178,7 +176,7 @@ router.put("/:id", isAuth, async (req, res, next) => {
       Object.assign(authorToUpdate, req.body);
       await authorToUpdate.save();
       // Quitamos pass de la respuesta
-      const authorToSend = authorToUpdate.toObject();
+      const authorToSend: any = authorToUpdate.toObject();
       delete authorToSend.password;
       res.json(authorToSend);
     } else {
@@ -189,11 +187,11 @@ router.put("/:id", isAuth, async (req, res, next) => {
   }
 });
 
-router.post("/logo-upload", upload.single("logo"), async (req, res, next) => {
+authorRouter.post("/logo-upload", upload.single("logo"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Renombrado de la imagen
-    const originalName = req.file.originalname;
-    const path = req.file.path;
+    const originalName = req.file?.originalname as string;
+    const path = req.file?.path as string;
     const newPath = path + "_" + originalName;
     fs.renameSync(path, newPath);
 
@@ -215,5 +213,3 @@ router.post("/logo-upload", upload.single("logo"), async (req, res, next) => {
     next(error);
   }
 });
-
-module.exports = { authorRouter: router };

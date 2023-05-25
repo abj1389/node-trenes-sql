@@ -1,12 +1,22 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+import mongoose from "mongoose";
+import validator from "validator";
+import bcrypt from "bcrypt";
+import { type IBook } from "./Book";
 const Schema = mongoose.Schema;
-const bcrypt = require("bcrypt");
 
 const allowedCountries = ["COLOMBIA", "ENGLAND", "RUSSIA", "UNITED STATES", "ARGENTINA", "CZECHOSLOVAKIA", "JAPAN", "NIGERIA"];
 
+export interface IAuthor {
+  email: string;
+  password: string;
+  name: string;
+  country: string;
+  profileImage: string;
+  books?: IBook[];
+}
+
 // Creamos el schema del autor
-const authorSchema = new Schema(
+const authorSchema = new Schema<IAuthor>(
   {
     email: {
       type: String,
@@ -14,7 +24,7 @@ const authorSchema = new Schema(
       required: true,
       unique: true,
       validate: {
-        validator: validator.isEmail,
+        validator: (value: string) => validator.isEmail(value),
         message: "Email incorrecto",
       },
     },
@@ -49,33 +59,19 @@ const authorSchema = new Schema(
   }
 );
 
-// authorSchema.pre("insertMany", { document: true, query: false }, async function (next) {
-//   try {
-//     if (this.isModified("password")) {
-//       const saltRounds = 10;
-//       const passwordEncrypted = await bcrypt.hash(this.password, saltRounds);
-//       this.password = passwordEncrypted;
-//     }
-//     next();
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 authorSchema.pre("save", async function (next) {
   try {
     // Si la contraseña ya estaba encriptada, no la encriptamos de nuevo
     if (this.isModified("password")) {
-      const saltRounds = 10;
-      const passwordEncrypted = await bcrypt.hash(this.password, saltRounds);
+      const saltRounds: number = 10;
+      const passwordEncrypted: string = await bcrypt.hash(this.password, saltRounds);
       this.password = passwordEncrypted;
     }
 
     next();
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
 
-const Author = mongoose.model("Author", authorSchema);
-module.exports = { Author };
+export const Author = mongoose.model<IAuthor>("Author", authorSchema);

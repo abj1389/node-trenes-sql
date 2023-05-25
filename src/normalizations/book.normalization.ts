@@ -1,8 +1,8 @@
-const { mongoose } = require("mongoose");
-const { connect } = require("../db.js");
-const { Book } = require("../models/Book.js");
+import mongoose from "mongoose";
+import { connect } from "../db";
+import { Book } from "../models/Book";
 
-const bookNormalization = async () => {
+const bookNormalization = async (): Promise<void> => {
   try {
     await connect();
     console.log("Conexíón realizada correctamente.");
@@ -29,7 +29,7 @@ const bookNormalization = async () => {
       } else {
         // He decidido eliminar las editoriales cuyo nombre no cumple la validación
         // y la otra opción sería actualizar las editoriales con un nombre valido.
-        book.publisher = {};
+        book.publisher = { name: "", country: "" };
         invalidPublishers.push(book.publisher);
       }
     }
@@ -37,20 +37,20 @@ const bookNormalization = async () => {
       console.log("Modificados todos los libros de nuestra base de datos");
     } else {
       console.log("No se han podido añadir los siguientes libros a la base de datos:");
-      invalidBooks.forEach((invalidBook) => console.log(invalidBook.title));
+      invalidBooks.forEach((invalidBook) => { console.log(invalidBook.title); });
       console.log("Motivo: El título no cumple con la longitud mínima o máxima de caracteres.");
     }
     if (invalidPublishers.length === 0) {
       console.log("Modificadas todas las editoriales de nuestra base de datos");
     } else {
       console.log("No se han podido añadir las siguientes editoriales a la base de datos:");
-      invalidPublishers.forEach((invalidPublisher) => console.log(invalidPublisher.name));
+      invalidPublishers.forEach((invalidPublisher) => { console.log(invalidPublisher.name); });
     }
   } catch (error) {
     console.error(error);
   } finally {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   }
 };
 
-bookNormalization();
+void bookNormalization();

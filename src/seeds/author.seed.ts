@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
-const { connect } = require("../db.js");
-const { Author } = require("../models/Author.js");
+import mongoose from "mongoose";
+import { connect } from "../db";
+import { Author } from "../models/Author";
 
-const authorSeed = async () => {
+const authorSeed = async (): Promise<void> => {
   try {
     // Conectar a BBDD
     await connect();
@@ -31,7 +31,7 @@ const authorSeed = async () => {
   } catch (error) {
     console.error(error);
   } finally {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   }
 };
-authorSeed();
+void authorSeed();

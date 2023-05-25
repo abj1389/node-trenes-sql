@@ -1,18 +1,20 @@
 // Cargamos variables de entorno
-require("dotenv").config();
-const DB_CONNECTION = process.env.DB_URL;
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-const mongoose = require("mongoose");
+const DB_CONNECTION: string = process.env.DB_URL as string;
+const DB_NAME: string = process.env.DB_NAME as string;
 
 // Configuración de la conexión
 const config = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
-  dbName: process.env.DB_NAME,
+  dbName: DB_NAME,
 };
 
-const connect = async () => {
+export const connect = async (): Promise<typeof mongoose | null> => {
   try {
     const database = await mongoose.connect(DB_CONNECTION, config);
     const name = database.connection.name;
@@ -23,7 +25,6 @@ const connect = async () => {
     console.error(error);
     console.log("Error en la conexión, intentando conectar en 5s...");
     setTimeout(connect, 5000);
+    return null;
   }
 };
-
-module.exports = { connect };

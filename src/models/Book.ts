@@ -1,12 +1,23 @@
-const mongoose = require("mongoose");
+import mongoose, { type ObjectId } from "mongoose";
 const Schema = mongoose.Schema;
 
 // No uso array para validar countries ya que este dato lo genero con faker
 // y me imagino que tendra una lista con todos los paises...
 // const allowedCountries = [];
 
+// Creamos la interface
+export interface IBook {
+  title: string;
+  author: ObjectId;
+  pages: number;
+  publisher: {
+    name: string;
+    country: string;
+  };
+}
+
 // Creamos el schema del libro
-const bookSchema = new Schema(
+const bookSchema = new Schema<IBook>(
   {
     title: {
       type: String,
@@ -47,5 +58,4 @@ const bookSchema = new Schema(
   }
 );
 
-const Book = mongoose.model("Book", bookSchema);
-module.exports = { Book };
+export const Book = mongoose.model<IBook>("Book", bookSchema);

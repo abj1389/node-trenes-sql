@@ -1,22 +1,22 @@
-const express = require("express");
+import express, { type NextFunction, type Response, type Request } from "express";
 
 // Modelos
-const { Book } = require("../models/Book.js");
+import { Book } from "../models/Book";
 
 // Router propio de libros
-const router = express.Router();
+export const bookRouter = express.Router();
 
 // Middleware de paginación
-router.get("/", (req, res, next) => {
+bookRouter.get("/", (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log("Estamos en el middleware /car que comprueba parámetros");
 
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const page: number = req.query.page ? parseInt(req.query.page as string) : 1;
+    const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
     if (!isNaN(page) && !isNaN(limit) && page > 0 && limit > 0) {
-      req.query.page = page;
-      req.query.limit = limit;
+      req.query.page = page as any;
+      req.query.limit = limit as any;
       next();
     } else {
       console.log("Parámetros no válidos:");
@@ -29,9 +29,9 @@ router.get("/", (req, res, next) => {
 });
 
 // CRUD: READ
-router.get("/", async (req, res, next) => {
+bookRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit }: any = req.query;
     const books = await Book.find()
       .limit(limit)
       .skip((page - 1) * limit)
@@ -52,7 +52,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // CRUD: READ
-router.get("/:id", async (req, res, next) => {
+bookRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const book = await Book.findById(id).populate("author");
@@ -66,7 +66,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/title/:title", async (req, res, next) => {
+bookRouter.get("/title/:title", async (req: Request, res: Response, next: NextFunction) => {
   const title = req.params.title;
 
   try {
@@ -82,7 +82,7 @@ router.get("/title/:title", async (req, res, next) => {
 });
 
 // CRUD: CREATE
-router.post("/", async (req, res, next) => {
+bookRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const book = new Book(req.body);
 
@@ -94,7 +94,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // CRUD: DELETE
-router.delete("/:id", async (req, res, next) => {
+bookRouter.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const bookDeleted = await Book.findByIdAndDelete(id);
@@ -109,7 +109,7 @@ router.delete("/:id", async (req, res, next) => {
 });
 
 // CRUD: UPDATE
-router.put("/:id", async (req, res, next) => {
+bookRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const bookUpdated = await Book.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
@@ -122,5 +122,3 @@ router.put("/:id", async (req, res, next) => {
     next(error);
   }
 });
-
-module.exports = { bookRouter: router };

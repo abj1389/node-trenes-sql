@@ -1,17 +1,17 @@
-const { mongoose } = require("mongoose");
-const { connect } = require("../db.js");
-const { Author } = require("../models/Author.js");
+import mongoose from "mongoose";
+import { connect } from "../db";
+import { Author } from "../models/Author";
 
-const authorNormalization = async () => {
+const authorNormalization = async (): Promise<void> => {
   try {
     await connect();
     console.log("Conexíón realizada correctamente.");
     const authors = await Author.find().select("+password");
     console.log(`Hemos recuperado ${authors.length} autores de la base de datos`);
-    const allowedCountries = ["COLOMBIA", "ENGLAND", "RUSSIA", "UNITED STATES", "ARGENTINA", "CZECHOSLOVAKIA", "JAPAN", "NIGERIA"];
-    const invalidAuthors = [];
+    const allowedCountries: string[] = ["COLOMBIA", "ENGLAND", "RUSSIA", "UNITED STATES", "ARGENTINA", "CZECHOSLOVAKIA", "JAPAN", "NIGERIA"];
+    const invalidAuthors: any[] = [];
     for (const author of authors) {
-      const validCountry = allowedCountries.find((element) => element === author.country);
+      const validCountry: string | undefined = allowedCountries.find((element) => element === author.country);
       if (validCountry) {
         author.name = author.name.trim();
         author.country = author.country.trim().toUpperCase();
@@ -34,14 +34,14 @@ const authorNormalization = async () => {
       console.log("Modificados todos los autores de nuestra base de datos");
     } else {
       console.log("No se han podido añadir los siguientes autores a la base de datos:");
-      invalidAuthors.forEach((invalidAuthor) => console.log(invalidAuthor.name));
+      invalidAuthors.forEach((invalidAuthor) => { console.log(invalidAuthor.name); });
       console.log("Motivo: El nombre no cumple con la longitud mínima (3) o máxima (30) o el país no es válido.");
     }
   } catch (error) {
     console.error(error);
   } finally {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   }
 };
 
-authorNormalization();
+void authorNormalization();

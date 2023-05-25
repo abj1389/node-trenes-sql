@@ -1,13 +1,21 @@
-const express = require("express");
-const { bookRouter } = require("./routes/book.routes.js");
-const { authorRouter } = require("./routes/author.routes.js");
-const { fileUploadRouter } = require("./routes/file-upload.routes.js");
-const cors = require("cors");
+import { bookRouter } from "./routes/book.routes";
+import { authorRouter } from "./routes/author.routes";
+import { fileUploadRouter } from "./routes/file-upload.routes";
 
-const main = async () => {
+import {
+  type Request,
+  type Response,
+  type NextFunction,
+  type ErrorRequestHandler,
+} from "express";
+
+import express from "express";
+import cors from "cors";
+import { connect } from "./db";
+
+const main = async (): Promise<void> => {
   // Conexión a la BBDD
-  const { connect } = require("./db.js");
-  await connect();
+  const database = await connect();
 
   // Configuración del app
   const PORT = 3000;
@@ -17,17 +25,17 @@ const main = async () => {
   app.use(cors({ origin: "http://localhost:3000" }));
 
   //  Middlewares de aplicación
-  app.use((req, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     const date = new Date();
-    console.log(`Petición de tipo ${req.method} a la url ${req.originalUrl} el ${date}`);
+    console.log(`Petición de tipo ${req.method} a la url ${req.originalUrl} el ${date.toString()}`);
     next();
   });
   // Rutas
   const router = express.Router();
-  router.get("/", (req, res) => {
-    res.send("Esta es la home de nuestra API");
+  router.get("/", (req: Request, res: Response) => {
+    res.send(`Esta es la home de nuestra API. Estamos utilizando la BBDD de ${database?.connection?.name as string} `);
   });
-  router.get("*", (req, res) => {
+  router.get("*", (req: Request, res: Response) => {
     res.status(404).send("Lo sentimos :( No hemos encontrado la página solicitada.");
   });
 
@@ -39,7 +47,7 @@ const main = async () => {
   app.use("/", router);
 
   // Middleware de gestión de errores
-  app.use((err, req, res, next) => {
+  app.use((err: ErrorRequestHandler, req: Request, res: Response, next: NextFunction) => {
     console.log("*** INICIO DE ERROR ***");
     console.log(`PETICIÓN FALLIDA: ${req.method} a la url ${req.originalUrl}`);
     console.log(err);
@@ -56,4 +64,4 @@ const main = async () => {
     console.log(`app levantado en el puerto ${PORT}`);
   });
 };
-main();
+void main();

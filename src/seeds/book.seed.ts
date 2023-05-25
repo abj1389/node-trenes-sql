@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const { connect } = require("../db.js");
-const { Book } = require("../models/Book.js");
-const { faker } = require("@faker-js/faker");
+import mongoose from "mongoose";
+import { connect } from "../db";
+import { Book } from "../models/Book";
+import { faker } from "@faker-js/faker";
 
-const bookList = [];
+const bookList: any = [];
 
 // Creamos libros adicionales
 for (let i = 0; i < 50; i++) {
@@ -18,7 +18,7 @@ for (let i = 0; i < 50; i++) {
   bookList.push(newBook);
 }
 
-const bookSeed = async () => {
+const bookSeed = async (): Promise<void> => {
   try {
     // Conectar a BBDD
     await connect();
@@ -27,12 +27,12 @@ const bookSeed = async () => {
     await Book.collection.drop();
     console.log("Libros eliminados");
     // Añadir libros
-    const documents = bookList.map((book) => new Book(book));
+    const documents = bookList.map((book: any) => new Book(book));
     await Book.insertMany(documents);
   } catch (error) {
     console.error(error);
   } finally {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   }
 };
-bookSeed();
+void bookSeed();

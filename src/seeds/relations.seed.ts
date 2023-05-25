@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
-const { connect } = require("../db.js");
-const { Book } = require("../models/Book.js");
-const { Author } = require("../models/Author.js");
-const { generateRandom } = require("../utils/generate-random.js");
+import mongoose from "mongoose";
+import { connect } from "../db";
+import { Book } from "../models/Book";
+import { Author } from "../models/Author";
+import { generateRandom } from "../utils/generate-random";
 
-const relationSeed = async () => {
+const relationSeed = async (): Promise<void> => {
   try {
     await connect();
     console.log("Tenemos conexión!");
@@ -35,8 +35,8 @@ const relationSeed = async () => {
     console.log("Relación entre libros-autores creada correctamente.");
   } catch (error) {
   } finally {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   }
 };
 
-relationSeed();
+void relationSeed();
