@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { connect } from "../db";
-import { Author } from "../models/Author";
+import { mongoConnect } from "../databases/mongo-db";
+import { Author } from "../models/mongo/Author";
 
 const authorNormalization = async (): Promise<void> => {
   try {
-    await connect();
+    await mongoConnect();
     console.log("Conexíón realizada correctamente.");
     const authors = await Author.find().select("+password");
     console.log(`Hemos recuperado ${authors.length} autores de la base de datos`);
@@ -34,7 +34,9 @@ const authorNormalization = async (): Promise<void> => {
       console.log("Modificados todos los autores de nuestra base de datos");
     } else {
       console.log("No se han podido añadir los siguientes autores a la base de datos:");
-      invalidAuthors.forEach((invalidAuthor) => { console.log(invalidAuthor.name); });
+      invalidAuthors.forEach((invalidAuthor) => {
+        console.log(invalidAuthor.name);
+      });
       console.log("Motivo: El nombre no cumple con la longitud mínima (3) o máxima (30) o el país no es válido.");
     }
   } catch (error) {

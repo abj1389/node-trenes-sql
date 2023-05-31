@@ -1,7 +1,7 @@
 import express, { type NextFunction, type Response, type Request } from "express";
 
 // Modelos
-import { Book } from "../models/Book";
+import { Book } from "../models/mongo/Book";
 
 // Router propio de libros
 export const bookRouter = express.Router();

@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { connect } from "../db";
-import { Author } from "../models/Author";
+import { mongoConnect } from "../databases/mongo-db";
+import { Author } from "../models/mongo/Author";
 
 const authorSeed = async (): Promise<void> => {
   try {
     // Conectar a BBDD
-    await connect();
+    await mongoConnect();
     console.log("Tenemos conexión");
     // Borrar autores
     await Author.collection.drop();

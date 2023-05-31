@@ -1,21 +1,19 @@
 import { bookRouter } from "./routes/book.routes";
 import { authorRouter } from "./routes/author.routes";
 import { fileUploadRouter } from "./routes/file-upload.routes";
+import { companyRouter } from "./routes/company.routes";
 
-import {
-  type Request,
-  type Response,
-  type NextFunction,
-  type ErrorRequestHandler,
-} from "express";
+import { type Request, type Response, type NextFunction, type ErrorRequestHandler } from "express";
 
 import express from "express";
 import cors from "cors";
-import { connect } from "./db";
+import { mongoConnect } from "./databases/mongo-db";
+import { sqlConnect } from "./databases/sql-db";
 
 const main = async (): Promise<void> => {
   // Conexión a la BBDD
-  const database = await connect();
+  const mongoDatabase = await mongoConnect();
+  const sqlDatabase = await sqlConnect();
 
   // Configuración del app
   const PORT = 3000;
@@ -33,7 +31,11 @@ const main = async (): Promise<void> => {
   // Rutas
   const router = express.Router();
   router.get("/", (req: Request, res: Response) => {
-    res.send(`Esta es la home de nuestra API. Estamos utilizando la BBDD de ${database?.connection?.name as string} `);
+    res.send(`
+      <h3>Esta es la home de nuestra API.</h3>
+      <p>Estamos usando la BBDD Mongo de ${mongoDatabase?.connection?.name as string}</p>
+      <p>Estamos usando la BBDD SQL ${sqlDatabase?.config?.database as string} del host ${sqlDatabase?.config?.host as string}</p>
+    `);
   });
   router.get("*", (req: Request, res: Response) => {
     res.status(404).send("Lo sentimos :( No hemos encontrado la página solicitada.");
@@ -44,6 +46,7 @@ const main = async (): Promise<void> => {
   app.use("/author", authorRouter);
   app.use("/public", express.static("public"));
   app.use("/file-upload", fileUploadRouter);
+  app.use("/company", companyRouter);
   app.use("/", router);
 
   // Middleware de gestión de errores

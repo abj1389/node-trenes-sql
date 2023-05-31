@@ -14,7 +14,7 @@ const config = {
   dbName: DB_NAME,
 };
 
-export const connect = async (): Promise<typeof mongoose | null> => {
+export const mongoConnect = async (): Promise<typeof mongoose | null> => {
   try {
     const database = await mongoose.connect(DB_CONNECTION, config);
     const name = database.connection.name;
@@ -24,7 +24,7 @@ export const connect = async (): Promise<typeof mongoose | null> => {
   } catch (error) {
     console.error(error);
     console.log("Error en la conexión, intentando conectar en 5s...");
-    setTimeout(connect, 5000);
+    setTimeout(mongoConnect, 5000);
     return null;
   }
 };

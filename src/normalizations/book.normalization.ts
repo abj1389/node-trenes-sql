@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { connect } from "../db";
-import { Book } from "../models/Book";
+import { mongoConnect } from "../databases/mongo-db";
+import { Book } from "../models/mongo/Book";
 
 const bookNormalization = async (): Promise<void> => {
   try {
-    await connect();
+    await mongoConnect();
     console.log("Conexíón realizada correctamente.");
 
     const books = await Book.find();
@@ -37,14 +37,18 @@ const bookNormalization = async (): Promise<void> => {
       console.log("Modificados todos los libros de nuestra base de datos");
     } else {
       console.log("No se han podido añadir los siguientes libros a la base de datos:");
-      invalidBooks.forEach((invalidBook) => { console.log(invalidBook.title); });
+      invalidBooks.forEach((invalidBook) => {
+        console.log(invalidBook.title);
+      });
       console.log("Motivo: El título no cumple con la longitud mínima o máxima de caracteres.");
     }
     if (invalidPublishers.length === 0) {
       console.log("Modificadas todas las editoriales de nuestra base de datos");
     } else {
       console.log("No se han podido añadir las siguientes editoriales a la base de datos:");
-      invalidPublishers.forEach((invalidPublisher) => { console.log(invalidPublisher.name); });
+      invalidPublishers.forEach((invalidPublisher) => {
+        console.log(invalidPublisher.name);
+      });
     }
   } catch (error) {
     console.error(error);

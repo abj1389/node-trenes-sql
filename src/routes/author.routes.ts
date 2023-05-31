@@ -1,7 +1,7 @@
 import { generateToken } from "../utils/token";
 import { isAuth } from "../middlewares/auth.middleware";
-import { Author } from "../models/Author";
-import { Book } from "../models/Book";
+import { Author } from "../models/mongo/Author";
+import { Book } from "../models/mongo/Book";
 import express, { type NextFunction, type Response, type Request } from "express";
 import fs from "fs";
 import bcrypt from "bcrypt";
