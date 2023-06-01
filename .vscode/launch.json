@@ -6,10 +6,9 @@
   "configurations": [
     {
       "type": "node",
-      "request": "launch",
-      "name": "Iniciar el programa",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/index.js"
+      "request": "attach",
+      "name": "Enganchar a un proceso",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

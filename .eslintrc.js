@@ -10,7 +10,7 @@ module.exports = {
     sourceType: "module",
     project: ["./tsconfig.json"],
   },
-  ignorePatterns: ["dist/*", "./front"],
+  ignorePatterns: ["dist/*"],
   rules: {
     "semi": "off",
     "space-before-function-paren": "off",

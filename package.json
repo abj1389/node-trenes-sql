@@ -14,7 +14,8 @@
     "seed:all": "npm run seed:books && npm run seed:authors && npm run seed:relations",
     "normalization:book": "node ./normalizations/book.normalization.js",
     "normalization:author": "node ./normalizations/author.normalization.js",
-    "start": "ts-node-dev ./src/index.ts",
+    "seed:course-and-student": "ts-node-dev ./src/seeds/course-and-student.seed.ts --ignore-watch",
+    "start": "ts-node-dev --inspect -- ./src/index.ts",
     "start:pro": "npm run build && node ./dist/index.js",
     "build": "tsc"
   },
@@ -51,6 +52,8 @@
     "mongoose": "^7.0.5",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.3.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.16",
     "validator": "^13.9.0"
   }
 }
