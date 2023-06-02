@@ -131,10 +131,10 @@ travelRouter.delete("/:id", async (req: Request, res: Response, next: NextFuncti
 
     if (!travelToRemove) {
       res.status(404).json({ error: "Travel not found" });
-    } else if (travelToRemove.train.id as number) {
+    } else if (travelToRemove.train) {
       await trainRepository.findOne({
         where: {
-          id: travelToRemove.train,
+          id: travelToRemove.train.id,
         },
       });
       await travelRepository.remove(travelToRemove);

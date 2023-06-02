@@ -12,10 +12,10 @@ const userRepository: Repository<User> = AppDataSource.getRepository(User);
 const reservationRepository: Repository<Reservation> = AppDataSource.getRepository(Reservation);
 
 // Router
-export const UserRouter = Router();
+export const userRouter = Router();
 
 // CRUD: READ
-UserRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users: User[] = await userRepository.find({ relations: ["Reservation"] });
     res.json(users);
@@ -24,7 +24,7 @@ UserRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-UserRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idReceivedInParams = parseInt(req.params.id);
 
@@ -45,7 +45,7 @@ UserRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
-UserRouter.get("/firstName/:firstName", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get("/firstName/:firstName", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const firstNameReceivedInParams = req.params.firstName;
 
@@ -67,7 +67,7 @@ UserRouter.get("/firstName/:firstName", async (req: Request, res: Response, next
 });
 
 // CRUD: CREATE
-UserRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Construimos user
     const newUser = new User();
@@ -102,7 +102,7 @@ UserRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
 });
 
 // CRUD: DELETE
-UserRouter.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idReceivedInParams = parseInt(req.params.id);
 
@@ -121,7 +121,7 @@ UserRouter.delete("/:id", async (req: Request, res: Response, next: NextFunction
   }
 });
 
-UserRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idReceivedInParams = parseInt(req.params.id);
 
@@ -162,9 +162,9 @@ UserRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // Login de usuarios
-UserRouter.post("/login", async (req: any, res: Response, next: NextFunction) => {
+userRouter.post("/login", async (req: any, res: Response, next: NextFunction) => {
   try {
-  // Declaracion de dos const con el mismo nombre que los campos que queremos del body
+    // Declaracion de dos const con el mismo nombre que los campos que queremos del body
     const { email, password } = req.body;
 
     // Comprueba si hay usuario y contraseña
@@ -174,11 +174,13 @@ UserRouter.post("/login", async (req: any, res: Response, next: NextFunction) =>
     }
 
     // Busca el usuario, seleccionando tambien el campo password
-    const userFound = await userRepository.findOne({
-      where: {
-        email: req.body.userEmail,
-      },
-    }).select("+password");
+    const userFound = await userRepository
+      .findOne({
+        where: {
+          email: req.body.userEmail,
+        },
+      })
+      .select("+password");
     if (!userFound) {
       return res.status(401).json({ error: "Combinacion de usuario y password incorrecta" });
     }
@@ -186,7 +188,7 @@ UserRouter.post("/login", async (req: any, res: Response, next: NextFunction) =>
     // Compara el password recibido con el guardado previamente encriptado
     const passwordMatches = await bcrypt.compare(password, userFound.password as string);
     if (passwordMatches) {
-    // Eliminamos el password del objeto que devuelve
+      // Eliminamos el password del objeto que devuelve
       const authorPasswordFiltered = userFound.toObject();
       delete authorPasswordFiltered.password;
 
