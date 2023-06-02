@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Student } from "../models/typeorm/Student";
-import { Course } from "../models/typeorm/Course";
+import { Travel } from "../models/typeorm/Travel";
+import { Train } from "../models/typeorm/Train";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   synchronize: true,
   logging: false,
-  entities: [Student, Course], // TODO
+  entities: [Travel, Train], // TODO
   migrations: [], // TODO
   subscribers: [], // TODO
 });
