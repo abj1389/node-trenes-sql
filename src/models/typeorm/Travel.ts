@@ -27,5 +27,5 @@ export class Travel {
   train: Train;
 
   @ManyToOne((type) => Reservation, (reservation) => reservation.travel)
-  reservation: Reservation;
+  reservations: Reservation[];
 }
