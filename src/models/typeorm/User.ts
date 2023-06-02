@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Reservation } from "./Reservation";
 
 @Entity()
-export class Student {
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -31,6 +31,6 @@ export class Student {
   @Column()
   treatment: string;
 
-  @ManyToOne((type) => Reservation, (reservation) => reservation.user)
+  @ManyToOne((type) => Reservation, (reservation) => reservation.users)
   reservation: Reservation;
 }
