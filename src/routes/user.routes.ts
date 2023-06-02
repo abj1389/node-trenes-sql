@@ -181,6 +181,7 @@ userRouter.post("/login", async (req: any, res: Response, next: NextFunction) =>
         },
       })
       .select("+password");
+
     if (!userFound) {
       return res.status(401).json({ error: "Combinacion de usuario y password incorrecta" });
     }
