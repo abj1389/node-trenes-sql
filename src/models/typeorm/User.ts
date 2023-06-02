@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Reserve } from "./Reserve";
+import { Reservation } from "./Reservation";
 
 @Entity()
 export class Student {
@@ -31,6 +31,6 @@ export class Student {
   @Column()
   treatment: string;
 
-  @ManyToOne((type) => Reserve, (reserve) => reserve.user)
-  reserve: Reserve;
+  @ManyToOne((type) => Reservation, (reservation) => reservation.user)
+  reservation: Reservation;
 }
