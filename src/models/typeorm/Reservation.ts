@@ -1,7 +1,8 @@
-// PAID, USER, TRIP.
 /* eslint-disable @typescript-eslint/indent */
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+// PAID, USER, TRIP.
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
 import { User } from "./User";
+import { Travel } from "./Travel";
 
 enum paymentStatus {
   PAID = "paid",
@@ -21,8 +22,8 @@ export class Reservation {
   })
   paid: paymentStatus;
 
-  @Column()
-  trip: string;
+  @ManyToOne((type) => Travel, (travel) => travel.reservation)
+  travel: Travel;
 
   // USERS
   @OneToMany((type) => User, (user) => user.reservation, { cascade: true })
