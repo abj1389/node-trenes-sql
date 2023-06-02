@@ -69,15 +69,15 @@ UserRouter.get("/firstName/:firstName", async (req: Request, res: Response, next
 // CRUD: CREATE
 UserRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Construimos student
+    // Construimos user
     const newUser = new User();
 
     let userReservation;
 
-    if (req.body.courseId) {
+    if (req.body.reservationId) {
       userReservation = await reservationRepository.findOne({
         where: {
-          id: req.body.courseId,
+          id: req.body.reservationId,
         },
       });
 
@@ -134,10 +134,10 @@ UserRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) =
     } else {
       let userReservation;
 
-      if (req.body.courseId) {
+      if (req.body.reservationId) {
         userReservation = await reservationRepository.findOne({
           where: {
-            id: req.body.courseId,
+            id: req.body.reservationId,
           },
         });
 
@@ -150,7 +150,7 @@ UserRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) =
       // Asignamos valores
       Object.assign(userToUpdate, {
         ...req.body,
-        course: userReservation,
+        reservation: userReservation,
       });
 
       const updatedUser = await userRepository.save(userToUpdate);
@@ -174,7 +174,11 @@ UserRouter.post("/login", async (req: any, res: Response, next: NextFunction) =>
     }
 
     // Busca el usuario, seleccionando tambien el campo password
-    const userFound = await userRepository.findOneBy({ email }).select("+password");
+    const userFound = await userRepository.findOne({
+      where: {
+        email: req.body.userEmail,
+      },
+    }).select("+password");
     if (!userFound) {
       return res.status(401).json({ error: "Combinacion de usuario y password incorrecta" });
     }
