@@ -43,6 +43,32 @@ reservationRouter.get("/:id", async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 });
+reservationRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const idReceivedInParams = parseInt(req.params.id);
+
+    const reservationToUpdate = await reservationRepository.findOne({
+      where: {
+        id: idReceivedInParams,
+      },
+      relations: ["user", "travel"],
+    });
+
+    if (!reservationToUpdate) {
+      res.status(404).json({ error: "Reservation not found" });
+      return;
+    }
+
+    Object.assign(reservationToUpdate, {
+      paid: req.body.paid,
+    });
+
+    const updatedReservation = await reservationRepository.save(reservationToUpdate);
+    res.json(updatedReservation);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // CRUD: CREATE
 reservationRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {

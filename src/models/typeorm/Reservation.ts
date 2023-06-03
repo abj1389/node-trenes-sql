@@ -4,7 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { User } from "./User";
 import { Travel } from "./Travel";
 
-enum paymentStatus {
+export enum paymentStatus {
   PAID = "paid",
   PENDING = "pending",
   UNPAID = "unpaid",
