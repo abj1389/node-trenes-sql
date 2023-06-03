@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 // PAID, USER, TRIP.
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { User } from "./User";
 import { Travel } from "./Travel";
 
@@ -22,10 +22,9 @@ export class Reservation {
   })
   paid: paymentStatus;
 
-  @OneToOne((type) => Travel, (travel) => travel.reservations)
+  @ManyToOne((type) => Travel, (travel) => travel.reservations)
   travel: Travel;
 
-  // USERS
-  @OneToOne((type) => User, (user) => user.reservation, { cascade: true })
-  users: User[];
+  @ManyToOne((type) => User, (user) => user.reservations)
+  user: User;
 }

@@ -17,7 +17,7 @@ export const travelRouter = Router();
 // CRUD: READ
 travelRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const travels: Travel[] = await travelRepository.find({ relations: ["train", "reservation"] });
+    const travels: Travel[] = await travelRepository.find({ relations: ["train", "reservations"] });
     res.json(travels);
   } catch (error) {
     next(error);
@@ -32,7 +32,7 @@ travelRouter.get("/:id", async (req: Request, res: Response, next: NextFunction)
       where: {
         id: idReceivedInParams,
       },
-      relations: ["train", "reservation"],
+      relations: ["train", "reservations"],
     });
 
     if (!travel) {
@@ -157,25 +157,28 @@ travelRouter.put("/:id", async (req: Request, res: Response, next: NextFunction)
       res.status(404).json({ error: "Travel not found" });
     } else {
       let trainOfTravel;
-
-      if (req.body.trainId) {
-        trainOfTravel = await trainRepository.findOne({
-          where: {
-            id: req.body.trainId,
-          },
-        });
-
-        if (!trainOfTravel) {
-          res.status(404).json({ error: "Train not found" });
+      const reservationOfTravel = [];
+      if (req.body.reservationList) {
+        for (let i = 0; i < req.body.reservationList.length; i++) {
+          reservationOfTravel.push(
+            await reservationRepository.findOne({
+              where: {
+                id: req.body.reservationList[i],
+              },
+            })
+          );
+        }
+        if (!reservationOfTravel) {
+          res.status(404).json({ error: "Reservation not found" });
           return;
         }
+        // Asignamos valores
+        Object.assign(travelToUpdate, {
+          ...req.body,
+          train: trainOfTravel,
+          reservations: reservationOfTravel,
+        });
       }
-
-      // Asignamos valores
-      Object.assign(travelToUpdate, {
-        ...req.body,
-        train: trainOfTravel,
-      });
 
       const updatedTravel = await travelRepository.save(travelToUpdate);
       res.json(updatedTravel);
