@@ -3,6 +3,8 @@ import { DataSource } from "typeorm";
 import { Travel } from "../models/typeorm/Travel";
 import { Train } from "../models/typeorm/Train";
 import dotenv from "dotenv";
+import { Reservation } from "../models/typeorm/Reservation";
+import { User } from "../models/typeorm/User";
 dotenv.config();
 
 const SQL_HOST: string = process.env.SQL_HOST as string;
@@ -19,7 +21,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   synchronize: true,
   logging: false,
-  entities: [Travel, Train], // TODO
+  entities: [Travel, Train, User, Reservation], // TODO
   migrations: [], // TODO
   subscribers: [], // TODO
 });

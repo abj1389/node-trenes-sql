@@ -1,11 +1,13 @@
-import { type Router, type NextFunction, type Request, type Response } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
 import { type Repository } from "typeorm";
 import { AppDataSource } from "../databases/typeorm-datasource";
 import { Reservation } from "../models/typeorm/Reservation";
 import { User } from "../models/typeorm/User";
+import { Travel } from "../models/typeorm/Travel";
 
 const reservationRepository: Repository<Reservation> = AppDataSource.getRepository(Reservation);
 const userRepository: Repository<User> = AppDataSource.getRepository(User);
+const travelRepository: Repository<Travel> = AppDataSource.getRepository(Travel);
 
 // Router
 export const reservationRouter = Router();
@@ -13,7 +15,7 @@ export const reservationRouter = Router();
 // CRUD: READ
 reservationRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const reservations: Reservation[] = await reservationRepository.find({ relations: ["users"] });
+    const reservations: Reservation[] = await reservationRepository.find({ relations: ["user", "travel"] });
     res.json(reservations);
   } catch (error) {
     next(error);
@@ -28,7 +30,7 @@ reservationRouter.get("/:id", async (req: Request, res: Response, next: NextFunc
       where: {
         id: idReceivedInParams,
       },
-      relations: ["users"],
+      relations: ["user", "travel"],
     });
 
     if (!reservation) {
@@ -42,47 +44,47 @@ reservationRouter.get("/:id", async (req: Request, res: Response, next: NextFunc
   }
 });
 
-reservationRouter.get("/user/:userId", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userIdReceivedInParams = parseInt(req.params.userId);
-
-    const reservations = await reservationRepository.findOne({
-      where: {
-        id: userIdReceivedInParams,
-      },
-      relations: ["users"],
-    });
-
-    if (reservations.length === 0) {
-      res.status(404).json({ error: "Reservations not found" });
-      return;
-    }
-
-    res.json(reservations);
-  } catch (error) {
-    next(error);
-  }
-});
-
 // CRUD: CREATE
 reservationRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId, ...reservationData } = req.body;
+    const { userId, travelId, ...reservationData } = req.body;
 
-    let userOfReservation: User | undefined;
+    let userOfReservation: User | null = null;
 
     if (userId) {
-      userOfReservation = await userRepository.findOne(userId);
+      userOfReservation = await userRepository.findOneBy({
+        id: userId,
+      });
 
       if (!userOfReservation) {
         res.status(404).json({ error: "User not found" });
         return;
       }
+    } else {
+      res.status(400).json({ error: "User is mandatory" });
+      return;
+    }
+
+    let travelOfReservation: Travel | null = null;
+
+    if (travelId) {
+      travelOfReservation = await travelRepository.findOneBy({
+        id: travelId,
+      });
+
+      if (!travelOfReservation) {
+        res.status(404).json({ error: "Travel not found" });
+        return;
+      }
+    } else {
+      res.status(400).json({ error: "Travel is mandatory" });
+      return;
     }
 
     const newReservation = reservationRepository.create({
       ...reservationData,
-      users: userOfReservation ? [userOfReservation] : undefined,
+      user: userOfReservation,
+      travel: travelOfReservation,
     });
 
     const reservationSaved = await reservationRepository.save(newReservation);
@@ -98,7 +100,9 @@ reservationRouter.delete("/:id", async (req: Request, res: Response, next: NextF
   try {
     const idReceivedInParams = parseInt(req.params.id);
 
-    const reservationToRemove = await reservationRepository.findOne(idReceivedInParams);
+    const reservationToRemove = await reservationRepository.findOneBy({
+      id: idReceivedInParams,
+    });
 
     if (!reservationToRemove) {
       res.status(404).json({ error: "Reservation not found" });
@@ -108,41 +112,6 @@ reservationRouter.delete("/:id", async (req: Request, res: Response, next: NextF
     await reservationRepository.remove(reservationToRemove);
 
     res.json(reservationToRemove);
-  } catch (error) {
-    next(error);
-  }
-});
-
-reservationRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const idReceivedInParams = parseInt(req.params.id);
-
-    const reservationToUpdate = await reservationRepository.findOne(idReceivedInParams);
-
-    if (!reservationToUpdate) {
-      res.status(404).json({ error: "Reservation not found" });
-      return;
-    }
-
-    const { userId, ...reservationData } = req.body;
-
-    let userOfReservation: User | undefined;
-
-    if (userId) {
-      userOfReservation = await userRepository.findOne(userId);
-
-      if (!userOfReservation) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
-    }
-
-    Object.assign(reservationToUpdate, reservationData);
-    reservationToUpdate.users = userOfReservation ? [userOfReservation] : undefined;
-
-    const updatedReservation = await reservationRepository.save(reservationToUpdate);
-
-    res.json(updatedReservation);
   } catch (error) {
     next(error);
   }

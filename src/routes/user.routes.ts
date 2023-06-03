@@ -17,7 +17,7 @@ export const userRouter = Router();
 // CRUD: READ
 userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users: User[] = await userRepository.find({ relations: ["Reservation"] });
+    const users: User[] = await userRepository.find({ relations: ["reservations"] });
     res.json(users);
   } catch (error) {
     next(error);
@@ -32,7 +32,7 @@ userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) =
       where: {
         id: idReceivedInParams,
       },
-      relations: ["Reservation"],
+      relations: ["reservations"],
     });
 
     if (!user) {
@@ -53,7 +53,7 @@ userRouter.get("/firstName/:firstName", async (req: Request, res: Response, next
       where: {
         firstName: firstNameReceivedInParams,
       },
-      relations: ["Reservation"],
+      relations: ["reservations"],
     });
 
     if (!user) {
@@ -150,7 +150,7 @@ userRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) =
       // Asignamos valores
       Object.assign(userToUpdate, {
         ...req.body,
-        reservation: userReservation,
+        reservations: userReservation,
       });
 
       const updatedUser = await userRepository.save(userToUpdate);
@@ -174,27 +174,25 @@ userRouter.post("/login", async (req: any, res: Response, next: NextFunction) =>
     }
 
     // Busca el usuario, seleccionando tambien el campo password
-    const userFound = await userRepository
-      .findOne({
-        where: {
-          email: req.body.userEmail,
-        },
-      })
-      .select("+password");
+    const userFound = await userRepository.findOne({
+      where: {
+        email: req.body.userEmail,
+      },
+    });
 
     if (!userFound) {
       return res.status(401).json({ error: "Combinacion de usuario y password incorrecta" });
     }
 
     // Compara el password recibido con el guardado previamente encriptado
-    const passwordMatches = await bcrypt.compare(password, userFound.password as string);
+    const passwordMatches = await bcrypt.compare(password, userFound.password);
     if (passwordMatches) {
       // Eliminamos el password del objeto que devuelve
-      const authorPasswordFiltered = userFound.toObject();
+      const authorPasswordFiltered = userFound as any;
       delete authorPasswordFiltered.password;
 
       // Generamos token JWT
-      const jwtToken = generateToken(userFound._id.toString(), userFound.name);
+      const jwtToken = generateToken(userFound.id.toString(), userFound.email);
 
       console.log("Login correcto");
 
