@@ -5,7 +5,7 @@ import { Travel } from "../models/typeorm/Travel";
 import { Train } from "../models/typeorm/Train";
 import { Reservation } from "../models/typeorm/Reservation";
 import { AppDataSource } from "../databases/typeorm-datasource";
-import { type Repository } from "typeorm";
+import { type Repository, Between } from "typeorm";
 
 const travelRepository: Repository<Travel> = AppDataSource.getRepository(Travel);
 const trainRepository: Repository<Train> = AppDataSource.getRepository(Train);
@@ -17,7 +17,44 @@ export const travelRouter = Router();
 // CRUD: READ
 travelRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const travels: Travel[] = await travelRepository.find({ relations: ["train", "reservations"] });
+    const travels: Travel[] = await travelRepository.find({ relations: ["train", "reservations", "reservations.user"] });
+    res.json(travels);
+  } catch (error) {
+    next(error);
+  }
+});
+
+travelRouter.get("/search", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const origin = req.body.origin;
+    const destination = req.body.destination;
+    const dayBegin = new Date(req.body.date);
+    dayBegin.setHours(0);
+    dayBegin.setMinutes(0);
+    dayBegin.setSeconds(0);
+    dayBegin.setMilliseconds(0);
+    const dayEnd = new Date(req.body.date);
+    dayEnd.setHours(23);
+    dayEnd.setMinutes(59);
+    dayEnd.setSeconds(59);
+    dayEnd.setMilliseconds(999);
+
+    console.log(dayBegin);
+
+    console.log(dayEnd);
+
+    const travels = await travelRepository.find({
+      where: {
+        origin,
+        destination,
+        initDate: Between(dayBegin, dayEnd),
+      },
+    });
+
+    if (!travels) {
+      res.status(404).json({ error: "Travel not found" });
+    }
+
     res.json(travels);
   } catch (error) {
     next(error);
@@ -32,7 +69,7 @@ travelRouter.get("/:id", async (req: Request, res: Response, next: NextFunction)
       where: {
         id: idReceivedInParams,
       },
-      relations: ["train", "reservations"],
+      relations: ["train", "reservations", "reservations.user"],
     });
 
     if (!travel) {
@@ -45,28 +82,6 @@ travelRouter.get("/:id", async (req: Request, res: Response, next: NextFunction)
   }
 });
 
-// Dejo comentado esto por si se retoca en un futuro para algúna busqueda concreta...
-// travelRouter.get("/firstName/:firstName", async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const firstNameReceivedInParams = req.params.firstName;
-
-//     const travel = await travelRepository.find({
-//       where: {
-//         firstName: firstNameReceivedInParams,
-//       },
-//       relations: ["train"],
-//     });
-
-//     if (!travel) {
-//       res.status(404).json({ error: "Travel not found" });
-//     }
-
-//     res.json(travel);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 // CRUD: CREATE
 travelRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -74,7 +89,6 @@ travelRouter.post("/", async (req: Request, res: Response, next: NextFunction) =
     const newTravel = new Travel();
 
     let trainOfTravel;
-    const reservationOfTravel = [];
 
     if (req.body.trainId) {
       trainOfTravel = await trainRepository.findOne({
@@ -87,29 +101,16 @@ travelRouter.post("/", async (req: Request, res: Response, next: NextFunction) =
         res.status(404).json({ error: "Train not found" });
         return;
       }
-    }
-
-    if (req.body.reservationList) {
-      for (let i = 0; i < req.body.reservationList.length; i++) {
-        reservationOfTravel.push(
-          await reservationRepository.findOne({
-            where: {
-              id: req.body.reservationList[i],
-            },
-          })
-        );
-      }
-      if (!reservationOfTravel) {
-        res.status(404).json({ error: "Reservation not found" });
-        return;
-      }
+    } else {
+      res.status(400).json({ error: "Train is mandatory" });
+      return;
     }
 
     // Asignamos valores
     Object.assign(newTravel, {
       ...req.body,
       train: trainOfTravel,
-      reservations: reservationOfTravel,
+      reservations: [],
     });
 
     const travelSaved = await travelRepository.save(newTravel);
@@ -131,12 +132,7 @@ travelRouter.delete("/:id", async (req: Request, res: Response, next: NextFuncti
 
     if (!travelToRemove) {
       res.status(404).json({ error: "Travel not found" });
-    } else if (travelToRemove.train) {
-      await trainRepository.findOne({
-        where: {
-          id: travelToRemove.train.id,
-        },
-      });
+    } else {
       await travelRepository.remove(travelToRemove);
       res.json(travelToRemove);
     }

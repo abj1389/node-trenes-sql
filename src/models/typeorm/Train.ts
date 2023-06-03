@@ -13,6 +13,9 @@ export class Train {
   @Column()
   type: string;
 
+  @Column()
+  capacity: number;
+
   // ESTUDIANTES
   @OneToMany((type) => Travel, (travel) => travel.train, { cascade: true })
   travels: Travel[];

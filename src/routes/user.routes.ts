@@ -17,7 +17,7 @@ export const userRouter = Router();
 // CRUD: READ
 userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users: User[] = await userRepository.find({ relations: ["reservations"] });
+    const users: User[] = await userRepository.find({ relations: ["reservations", "reservations.travel"] });
     res.json(users);
   } catch (error) {
     next(error);
@@ -32,7 +32,7 @@ userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) =
       where: {
         id: idReceivedInParams,
       },
-      relations: ["reservations"],
+      relations: ["reservations", "reservations.travel"],
     });
 
     if (!user) {
@@ -53,7 +53,7 @@ userRouter.get("/firstName/:firstName", async (req: Request, res: Response, next
       where: {
         firstName: firstNameReceivedInParams,
       },
-      relations: ["reservations"],
+      relations: ["reservations", "reservations.travel"],
     });
 
     if (!user) {
